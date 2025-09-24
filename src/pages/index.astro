@@ -1,27 +1,153 @@
 ---
-// src/pages/index.astro
 const links = [
-  { name: "GitHub", url: "https://github.com/mhuseyinyavuz" },
-  { name: "LinkedIn", url: "https://linkedin.com/in/mhuseyinyavuz" },
-  { name: "Twitter", url: "https://twitter.com/mhuseyinyavuz" },
+  { name: "GitHub", url: "https://github.com/mhuseyinyavuz", icon: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/github.svg" },
+  { name: "LinkedIn", url: "https://linkedin.com/in/mhuseyinyavuz", icon: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg" },
+  { name: "Twitter", url: "https://twitter.com/mhuseyinyavuz", icon: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/twitter.svg" },
+  { name: "YouTube", url: "https://youtube.com/@kanalin", icon: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/youtube.svg" }
 ];
 ---
 
-<html lang="en">
+<html lang="tr">
   <head>
     <meta charset="UTF-8" />
-    <title>Benim Link Sayfam</title>
+    <title>Linklerim</title>
+    <style>
+      html, body {
+        margin:0;
+        padding:0;
+        height:100%;
+        font-family:sans-serif;
+        overflow:hidden;
+      }
+
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        perspective: 1000px;
+        background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
+        background-size: 600% 600%;
+        animation: rainbowGradient 20s ease infinite;
+      }
+
+      @keyframes rainbowGradient {
+        0% { background-position:0% 50%; }
+        50% { background-position:100% 50%; }
+        100% { background-position:0% 50%; }
+      }
+
+      .container {
+        text-align: center;
+        position: relative;
+        z-index: 1;
+      }
+
+      h1 {
+        color:white;
+        font-size:2.5rem;
+        margin-bottom:2rem;
+        text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+        animation: fadeIn 1s ease forwards;
+      }
+
+      @keyframes fadeIn {
+        0% {opacity:0; transform: translateY(-20px);}
+        100% {opacity:1; transform: translateY(0);}
+      }
+
+      .btn {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        justify-content: center;
+        margin:1rem auto;
+        padding:1rem 2rem;
+        font-size:1.2rem;
+        color:white;
+        background: linear-gradient(145deg,#1D4ED8,#2563EB);
+        border-radius:1rem;
+        box-shadow: 0 5px 0 #1E40AF, 0 10px 10px rgba(0,0,0,0.2);
+        text-decoration:none;
+        transform: translateY(30px);
+        opacity:0;
+        animation: slideIn 0.5s forwards;
+      }
+
+      .btn:hover {
+        transform: translateY(-5px) rotateX(5deg) scale(1.05);
+        box-shadow: 0 15px 15px rgba(0,0,0,0.3);
+      }
+
+      @keyframes slideIn {
+        to { transform: translateY(0); opacity:1; }
+      }
+
+      .btn img {
+        width:24px;
+        height:24px;
+        filter: invert(1); /* logo beyaz olsun */
+      }
+
+      .profile {
+        width:120px;
+        height:120px;
+        border-radius:50%;
+        border:4px solid white;
+        margin-bottom:1rem;
+        object-fit:cover;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        transition: transform 0.3s ease;
+        animation: fadeIn 1s ease forwards;
+      }
+
+      .profile:hover { transform: rotateY(15deg) scale(1.05); }
+
+      /* Particles */
+      .particle {
+        position:absolute;
+        width:8px;
+        height:8px;
+        background:white;
+        border-radius:50%;
+        opacity:0.9;
+        animation: float 10s linear infinite;
+      }
+
+      @keyframes float {
+        0% { transform: translateY(100vh) translateX(0);}
+        100% { transform: translateY(-10vh) translateX(50px);}
+      }
+    </style>
   </head>
-  <body style="font-family: sans-serif; text-align: center; padding: 2rem;">
-    <h1>📌 Benim Linklerim</h1>
-    <ul style="list-style: none; padding: 0;">
-      {links.map(link => (
-        <li style="margin: 1rem 0;">
-          <a href={link.url} target="_blank" style="text-decoration:none; font-size:1.2rem; color:blue;">
-            {link.name}
-          </a>
-        </li>
+  <body>
+    <div class="container">
+      <img src="https://avatars.githubusercontent.com/u/69046932" alt="Profil Fotoğrafım" class="profile" />
+      <h1>🚀 Benim Linklerim</h1>
+      {links.map((link, index) => (
+        <a 
+          href={link.url} 
+          target="_blank" 
+          class="btn" 
+          style={`animation-delay: ${0.2 * index + 1}s`}
+        >
+          <img src={link.icon} alt={link.name} />
+          {link.name}
+        </a>
       ))}
-    </ul>
+    </div>
+
+    <script>
+      // Partikülleri oluştur
+      for(let i=0;i<50;i++){
+        const p = document.createElement('div');
+        p.className='particle';
+        p.style.left = Math.random()*100+'vw';
+        p.style.animationDuration = (5 + Math.random()*10)+'s';
+        p.style.opacity = Math.random()*0.7 + 0.3;
+        p.style.width = p.style.height = (5 + Math.random()*8)+'px';
+        document.body.appendChild(p);
+      }
+    </script>
   </body>
 </html>
