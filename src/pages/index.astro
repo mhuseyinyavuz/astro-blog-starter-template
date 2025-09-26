@@ -1,7 +1,6 @@
 ---
 import { FaYoutube, FaInstagram, FaLink } from "react-icons/fa";
-import { QRCode } from "react-qrcode-logo";
-const QRCode = QRCodeModule.default || QRCodeModule;
+import { QRCodeCanvas } from "qrcode.react";
 ---
 
 <html lang="tr" class="light">
@@ -30,7 +29,7 @@ const QRCode = QRCodeModule.default || QRCodeModule;
 
       .dark body {
         background: black;
-        color: #0f0;
+        color: white;
       }
 
       @keyframes rainbow {
@@ -90,12 +89,17 @@ const QRCode = QRCodeModule.default || QRCodeModule;
       }
 
       .button:hover {
+        background: rgba(255,255,255,0.3);
         transform: scale(1.05);
       }
 
       .dark .button {
         background: rgba(0,255,0,0.2);
         color: #0f0;
+      }
+
+      .dark .button:hover {
+        background: rgba(0,255,0,0.3);
       }
 
       .mode-toggle {
@@ -122,32 +126,6 @@ const QRCode = QRCodeModule.default || QRCodeModule;
         font-size: 16px;
       }
 
-      .modal {
-        position: fixed;
-        inset: 0;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        background: rgba(0,0,0,0.6);
-        z-index: 200;
-      }
-
-      .modal.active {
-        display: flex;
-      }
-
-      .modal-content {
-        background: white;
-        padding: 20px;
-        border-radius: 12px;
-        text-align: center;
-      }
-
-      .dark .modal-content {
-        background: #111;
-        color: white;
-      }
-
       canvas#matrix {
         position: fixed;
         inset: 0;
@@ -161,7 +139,7 @@ const QRCode = QRCodeModule.default || QRCodeModule;
     </style>
   </head>
   <body>
-    <button class="mode-toggle" id="modeToggle">🌙/☀️</button>
+    <button class="mode-toggle" onclick="document.documentElement.classList.toggle('dark')">🌙/☀️</button>
 
     <div class="profile">
       <img src="https://i.pravatar.cc/300?img=68" alt="Profile" />
@@ -175,87 +153,26 @@ const QRCode = QRCodeModule.default || QRCodeModule;
     </div>
 
     <div class="links">
-      <a href="https://www.youtube.com/@Tech101TR" target="_blank" class="button" onclick="increment('youtube')">
+      <a href="https://www.youtube.com/@Tech101TR" target="_blank" class="button" onClick="increment('youtube')">
         <FaYoutube /> YouTube <span id="count-youtube">0</span>
       </a>
-      <a href="https://instagram.com/mhuseyinyavuz" target="_blank" class="button" onclick="increment('instagram')">
+      <a href="https://instagram.com/mhuseyinyavuz" target="_blank" class="button" onClick="increment('instagram')">
         <FaInstagram /> Instagram <span id="count-instagram">0</span>
       </a>
-      <a href="https://example.com" target="_blank" class="button" onclick="increment('website')">
+      <a href="https://www.huseyinyavuz.com" target="_blank" class="button" onClick="increment('website')">
         <FaLink /> Website <span id="count-website">0</span>
       </a>
-      <button class="button" onclick="document.getElementById('qrModal').classList.add('active')">
-        📱 QR Kod
-      </button>
+      <div class="button">
+        <QRCodeCanvas value="https://yourdomain.com" size={80} />
+      </div>
     </div>
 
     <div class="total-clicks">
       Toplam Tıklama: <span id="total-clicks">0</span>
     </div>
 
-    <div id="qrModal" class="modal" onclick="this.classList.remove('active')">
-      <div class="modal-content" onclick="event.stopPropagation()">
-        <h3>Sayfanın QR Kodu</h3>
-        <QRCode value="https://yourdomain.com" size={200} />
-      </div>
-    </div>
-
     <canvas id="matrix"></canvas>
 
-    <script type="module">
-      const counters = {
-        youtube: parseInt(localStorage.getItem("count-youtube") || "0"),
-        instagram: parseInt(localStorage.getItem("count-instagram") || "0"),
-        website: parseInt(localStorage.getItem("count-website") || "0"),
-      };
-
-      function renderCounts() {
-        document.getElementById("count-youtube").innerText = counters.youtube;
-        document.getElementById("count-instagram").innerText = counters.instagram;
-        document.getElementById("count-website").innerText = counters.website;
-        document.getElementById("total-clicks").innerText =
-          counters.youtube + counters.instagram + counters.website;
-      }
-
-      function increment(key) {
-        counters[key]++;
-        localStorage.setItem("count-" + key, counters[key]);
-        renderCounts();
-      }
-
-      renderCounts();
-
-      const modeToggle = document.getElementById("modeToggle");
-      modeToggle.addEventListener("click", () => {
-        const html = document.documentElement;
-        html.classList.toggle("dark");
-        html.classList.toggle("light");
-      });
-
-      // Matrix effect
-      const canvas = document.getElementById("matrix");
-      const ctx = canvas.getContext("2d");
-
-      function resizeCanvas() {
-        canvas.height = window.innerHeight;
-        canvas.width = window.innerWidth;
-      }
-      window.addEventListener("resize", resizeCanvas);
-      resizeCanvas();
-
-      const letters = Array(256).fill(0);
-      function drawMatrix() {
-        ctx.fillStyle = "rgba(0,0,0,0.05)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#0F0";
-        letters.forEach((y_pos, index) => {
-          const text = String.fromCharCode(3e4 + Math.random() * 33);
-          const x = index * 10;
-          ctx.fillText(text, x, y_pos);
-          letters[index] = y_pos > 100 + Math.random() * 1e4 ? 0 : y_pos + 10;
-        });
-      }
-      setInterval(drawMatrix, 60);
-    </script>
+    <script type="module" src="/scripts/main.js"></script>
   </body>
 </html>
