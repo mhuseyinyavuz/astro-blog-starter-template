@@ -1,23 +1,261 @@
- you can configure `imageService: "compile"` to optimize images with sharp on prerendered pages during build time.
-10:11:03 [vite] Re-optimizing dependencies because lockfile has changed
-10:11:04 [content] Syncing content
-10:11:04 [content] Synced content
-10:11:04 [types] Generated 639ms
-10:11:04 [build] output: "static"
-10:11:04 [build] mode: "server"
-10:11:04 [build] directory: /Users/mhuseyinyavuz/Documents/GitHub/astro-blog-starter-template/dist/
-10:11:04 [build] adapter: @astrojs/cloudflare
-10:11:04 [build] Collecting build info...
-10:11:04 [build] ✓ Completed in 652ms.
-10:11:04 [build] Building server entrypoints...
-10:11:04 [ERROR] [vite] ✗ Build failed in 245ms
-Unexpected "const"
-  Location:
-    /Users/mhuseyinyavuz/Documents/GitHub/astro-blog-starter-template/src/pages/index.astro:28:36
-  Stack trace:
-    at failureErrorWithLog (/Users/mhuseyinyavuz/Documents/GitHub/astro-blog-starter-template/node_modules/esbuild/lib/main.js:1467:15)
-    at responseCallbacks.<computed> (/Users/mhuseyinyavuz/Documents/GitHub/astro-blog-starter-template/node_modules/esbuild/lib/main.js:603:9)
-    at Socket.readFromStdout (/Users/mhuseyinyavuz/Documents/GitHub/astro-blog-starter-template/node_modules/esbuild/lib/main.js:581:7)
-    at Socket.emit (node:domain:489:12)
-    at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
-$
+---
+import { FaYoutube, FaInstagram, FaLink } from "react-icons/fa";
+import * as QRCodeModule from "qrcode.react";
+const QRCode = QRCodeModule.default || QRCodeModule;
+---
+
+<html lang="tr" class="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tech101 Linktree</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        transition: background 0.5s ease;
+      }
+
+      .light body {
+        background: linear-gradient(270deg, red, orange, yellow, green, blue, indigo, violet);
+        background-size: 1400% 1400%;
+        animation: rainbow 30s ease infinite;
+        color: black;
+      }
+
+      .dark body {
+        background: black;
+        color: #0f0;
+      }
+
+      @keyframes rainbow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      .profile {
+        text-align: center;
+        margin-bottom: 20px;
+        z-index: 10;
+      }
+
+      .profile img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 4px solid white;
+        margin-bottom: 10px;
+      }
+
+      .bio {
+        margin-top: 10px;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+
+      .links {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        width: 100%;
+        max-width: 300px;
+        z-index: 10;
+      }
+
+      .button {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 15px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.2);
+        backdrop-filter: blur(10px);
+        color: white;
+        font-size: 18px;
+        text-decoration: none;
+        transition: transform 0.2s ease, background 0.3s ease;
+      }
+
+      .button span {
+        margin-left: auto;
+        font-size: 14px;
+        opacity: 0.8;
+      }
+
+      .button:hover {
+        transform: scale(1.05);
+      }
+
+      .dark .button {
+        background: rgba(0,255,0,0.2);
+        color: #0f0;
+      }
+
+      .mode-toggle {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        z-index: 100;
+      }
+
+      .dark .mode-toggle {
+        background: #111;
+        color: #0f0;
+        border: 1px solid #0f0;
+      }
+
+      .total-clicks {
+        margin-top: 20px;
+        font-weight: bold;
+        font-size: 16px;
+      }
+
+      .modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0,0,0,0.6);
+        z-index: 200;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+      }
+
+      .dark .modal-content {
+        background: #111;
+        color: white;
+      }
+
+      canvas#matrix {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        display: none;
+      }
+
+      .dark canvas#matrix {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <button class="mode-toggle" id="modeToggle">🌙/☀️</button>
+
+    <div class="profile">
+      <img src="https://i.pravatar.cc/300?img=68" alt="Profile" />
+      <h2>Muhammed</h2>
+      <div class="bio">
+        ⚡ Elektrik-Elektronik Mühendisi <br/>
+        💻 Developer <br/>
+        📱 Teknoloji Aşığı <br/>
+        🎥 Youtuber
+      </div>
+    </div>
+
+    <div class="links">
+      <a href="https://www.youtube.com/@Tech101TR" target="_blank" class="button" onclick="increment('youtube')">
+        <FaYoutube /> YouTube <span id="count-youtube">0</span>
+      </a>
+      <a href="https://instagram.com/mhuseyinyavuz" target="_blank" class="button" onclick="increment('instagram')">
+        <FaInstagram /> Instagram <span id="count-instagram">0</span>
+      </a>
+      <a href="https://example.com" target="_blank" class="button" onclick="increment('website')">
+        <FaLink /> Website <span id="count-website">0</span>
+      </a>
+      <button class="button" onclick="document.getElementById('qrModal').classList.add('active')">
+        📱 QR Kod
+      </button>
+    </div>
+
+    <div class="total-clicks">
+      Toplam Tıklama: <span id="total-clicks">0</span>
+    </div>
+
+    <div id="qrModal" class="modal" onclick="this.classList.remove('active')">
+      <div class="modal-content" onclick="event.stopPropagation()">
+        <h3>Sayfanın QR Kodu</h3>
+        <QRCode value="https://yourdomain.com" size={200} />
+      </div>
+    </div>
+
+    <canvas id="matrix"></canvas>
+
+    <script type="module">
+      const counters = {
+        youtube: parseInt(localStorage.getItem("count-youtube") || "0"),
+        instagram: parseInt(localStorage.getItem("count-instagram") || "0"),
+        website: parseInt(localStorage.getItem("count-website") || "0"),
+      };
+
+      function renderCounts() {
+        document.getElementById("count-youtube").innerText = counters.youtube;
+        document.getElementById("count-instagram").innerText = counters.instagram;
+        document.getElementById("count-website").innerText = counters.website;
+        document.getElementById("total-clicks").innerText =
+          counters.youtube + counters.instagram + counters.website;
+      }
+
+      function increment(key) {
+        counters[key]++;
+        localStorage.setItem("count-" + key, counters[key]);
+        renderCounts();
+      }
+
+      renderCounts();
+
+      const modeToggle = document.getElementById("modeToggle");
+      modeToggle.addEventListener("click", () => {
+        const html = document.documentElement;
+        html.classList.toggle("dark");
+        html.classList.toggle("light");
+      });
+
+      // Matrix effect
+      const canvas = document.getElementById("matrix");
+      const ctx = canvas.getContext("2d");
+
+      function resizeCanvas() {
+        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
+      }
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+
+      const letters = Array(256).fill(0);
+      function drawMatrix() {
+        ctx.fillStyle = "rgba(0,0,0,0.05)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#0F0";
+        letters.forEach((y_pos, index) => {
+          const text = String.fromCharCode(3e4 + Math.random() * 33);
+          const x = index * 10;
+          ctx.fillText(text, x, y_pos);
+          letters[index] = y_pos > 100 + Math.random() * 1e4 ? 0 : y_pos + 10;
+        });
+      }
+      setInterval(drawMatrix, 60);
+    </script>
+  </body>
+</html>
