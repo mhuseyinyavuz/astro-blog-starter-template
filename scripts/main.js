@@ -1,0 +1,62 @@
+// scripts/main.js
+
+// Dark mode toggle
+export function toggleMode() {
+  const html = document.documentElement;
+  if (html.classList.contains("light")) {
+    html.classList.remove("light");
+    html.classList.add("dark");
+  } else {
+    html.classList.remove("dark");
+    html.classList.add("light");
+  }
+}
+
+// LocalStorage click counters
+const counters = {
+  youtube: parseInt(localStorage.getItem("count-youtube") || "0"),
+  instagram: parseInt(localStorage.getItem("count-instagram") || "0"),
+  website: parseInt(localStorage.getItem("count-website") || "0"),
+};
+
+export function renderCounts() {
+  document.getElementById("count-youtube").innerText = counters.youtube;
+  document.getElementById("count-instagram").innerText = counters.instagram;
+  document.getElementById("count-website").innerText = counters.website;
+  document.getElementById("total-clicks").innerText =
+    counters.youtube + counters.instagram + counters.website;
+}
+
+export function increment(key) {
+  counters[key]++;
+  localStorage.setItem("count-" + key, counters[key]);
+  renderCounts();
+}
+
+renderCounts();
+
+// Matrix effect
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas() {
+  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+const letters = Array(256).join("1").split("");
+function drawMatrix() {
+  ctx.fillStyle = "rgba(0,0,0,0.05)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#0F0";
+  letters.map((y_pos, index) => {
+    const text = String.fromCharCode(3e4 + Math.random() * 33);
+    const x = index * 10;
+    ctx.fillText(text, x, y_pos);
+    if (y_pos > 100 + Math.random() * 1e4) letters[index] = 0;
+    else letters[index] = y_pos + 10;
+  });
+}
+setInterval(drawMatrix, 60);
